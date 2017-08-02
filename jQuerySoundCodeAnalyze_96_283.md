@@ -256,6 +256,13 @@ $("div") $("#div1 div.box")
 #### 123-150 再次进行判断进入if
 进入if的是选择标签的时候`$("<li>")`
 
+#### 124
+看一下执行的上下文，instanceof jQuery是否为真。创建一个标签为什么会有执行上下文？
+eg:
+平时创建标签`$("<li>")`,对应到原生就是`document.createElement("li")`.那么`$("<li>",第二个参数)`里面的第二个参数只能是document，即`$("<li>",document)`,所以说第二个参数的作用就是在指定的不同的环境下找到根节点。如果不写document，比如`$("<li>")`，他就是在当前页面创建li标签；也可以写上document，即`$("<li>",document)`,他的意思还是在当前页面创建li标签。但是你也可以写成别的，比如iframe的形式`$("<li>",contentWindow.document)`。这样就可以找到iframe当中的document，这样写的时候，li是在对应的iframe里面创建的。jQuery中确实是这么做的，但是用处不大。
+
+**补充知识：**  [contentWindow.document](https://www.baidu.com/baidu?tn=null&ie=utf-8&wd=contentWindow.document)
+
 #### 150-164再次进行判断进入else
 进入else的时候是选择id的时候`$("#div1")`
 #### 200 默认length的长度是0
