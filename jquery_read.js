@@ -160,6 +160,9 @@ jQuery.fn = jQuery.prototype = {
 
 				// HANDLE: $(html) -> $(array)
 				if ( match[1] ) {
+					//获取document。如果当前传进来的是jQuery对象，那么instance of jQuery 就是真
+					//此时的context就是那个jQuery对象，我们需要处理一下，context[0]拿到原生的；如果
+					//不是jQuery对象，那就直接等于就行了，不用再处理
 					context = context instanceof jQuery ? context[0] : context;
 
 					// scripts is true for back-compat

@@ -261,7 +261,64 @@ $("div") $("#div1 div.box")
 eg:
 平时创建标签`$("<li>")`,对应到原生就是`document.createElement("li")`.那么`$("<li>",第二个参数)`里面的第二个参数只能是document，即`$("<li>",document)`,所以说第二个参数的作用就是在指定的不同的环境下找到根节点。如果不写document，比如`$("<li>")`，他就是在当前页面创建li标签；也可以写上document，即`$("<li>",document)`,他的意思还是在当前页面创建li标签。但是你也可以写成别的，比如iframe的形式`$("<li>",contentWindow.document)`。这样就可以找到iframe当中的document，这样写的时候，li是在对应的iframe里面创建的。jQuery中确实是这么做的，但是用处不大。
 
+打开jQuery官网，打开[API Documentation页面](http://api.jquery.com/),在search里面搜索jQuery(),找到如下如所示的区域，点击展开
+![](jQuerySoundCodeAnalyze_96_283_image/1.png)
+http://api.jquery.com/jQuery/
+![](jQuerySoundCodeAnalyze_96_283_image/2.png)
+如上图所示就能找到我们的
+
+这里为什么要判断一下instance of jjQuery?
+```javascript
+context = context instanceof jQuery ? context[0] : context;
+```
+
+原因在于
+```javascript
+$("<li>",documentWindow.document)
+```
+第二个参数可能直接写成原生的
+```javascript
+$("<li>",document)
+```
+如果写成原生的，`document instance of jQuery`肯定是假的,然后直接就返回了context，这里是原始的document。但是有时候可能这么写
+```javascript
+$("<li>",$(document))
+```
+这时候` context instanceof jQuery `返回的就是真了,即`context=context[0]`,这时候的context本身就是`$(document)`,但是我们要的是原生的，所以在里面选择一个属性是0的那个原生的document。反正最后得到的都是原生的。
 **补充知识：**  [contentWindow.document](https://www.baidu.com/baidu?tn=null&ie=utf-8&wd=contentWindow.document)
+
+
+#### 127-131
+```javascript
+$("<li>1</li><li>2</li>").appendTo('ul')
+```
+通过
+```
+$("<li>1</li><li>2</li>")
+```
+我们想得到
+```
+this={
+    0:'li',
+    1:'li',
+    length:2
+}
+```
+
+所以不管是单标签`$("<li>")`还是多标签`$("<li>1</li><li>2</li>")`最后都是走的是127那一行的parseHTML.**你要对jQuery.parseHTML这个方法有一定的了解**
+
+#### 127
+jQuery.parseHTML这个方法就是把一个字符串转成节点数组
+举个例子
+```
+$(function(){
+    var str='<li>1</li><li>2</li><li>3</li>';
+    var arr=jQuery.parseHTML(str);
+    console.log(arr);
+})
+```
+结果如图所示
+![](jQuerySoundCodeAnalyze_96_283_image/3.png)
 
 #### 150-164再次进行判断进入else
 进入else的时候是选择id的时候`$("#div1")`
@@ -275,4 +332,4 @@ eg:
 #### 193 处理传数组或者json的情况
 例如`$([])`或者`$({})`
 
-9
+9 10.49
