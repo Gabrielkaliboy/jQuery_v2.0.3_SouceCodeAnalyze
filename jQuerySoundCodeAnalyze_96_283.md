@@ -40,7 +40,7 @@ jQuery.fn=jquery.prototype={
 
 #### 98 jquery
 版本就是指向我们上面的那个变量（#49） 
-```
+```javascript
 alert($().jquery);
 //2.0.3
 ```
@@ -49,19 +49,19 @@ alert($().jquery);
 constructor在面向对象的中就是创建出来的对象下面所拥有的一个属性，这个属性指向的就是这个对象所属的构造函数是谁
 
 eg:
-```
+```javascript
 function Aaa(){};
 var a1=new Aaa();
 alert(a1.constructor);
 //function Aaa(){}
 ```
 a1.constructor指向的是他的构造函数Aaa。在js源码中会自动生成一个
-```
+```javascript
 Aaa.prototype.constructor=Aaa;
 ```
 所以在我们调用的时候是可以找到他的。那么是自动生成的，那么为什么jQuery中还要手动的指向一下呢？那是因为他的写法中，把指向给改了。
 
-```
+```javascript
 function Aaa(){};
 var a1=new Aaa();
 //如果强制更改他的constructor指向
@@ -70,7 +70,7 @@ alert(a1.constructor);
 //加了强制指向：function Array() { [native code] }
 ```
 这说明constructor属性很容易被修改掉，所以有些特殊情况我们需要修复一下，比如：
-```
+```javascript
 Aaa.prototype.name="jarry";
 Aaa.prototype.age=20;
 //因为Aaa.prototype本身就是一个对象，所以我们也可以用对象的写法，如下
@@ -82,7 +82,7 @@ Aaa.prototype={
 ```
 prototype两种不同的挂载方法的区别
 - 第一种,直接等号挂载，实例的返回的constructor就是Aaa
-```
+```javascript
 function Aaa(){};
 
 Aaa.prototype.name="jarry";
@@ -94,7 +94,7 @@ alert(a1.constructor);
 ```
 
 - 第二种：使用prototype对象挂载，实例返回的constructor是Objcet!
-```
+```javascript
 function Aaa(){};
 Aaa.prototype={
     "name":"jarry",
@@ -113,7 +113,7 @@ alert(a1.constructor);
 基于上面的不同情况，所以我们在平时使用的时候还需要把他的指向给修正过来，否则使用的时候肯定出问题
 
 #### 修正一下
-```
+```javascript
 function Aaa(){};
 Aaa.prototype={
     constructor:Aaa,
@@ -130,7 +130,7 @@ alert(a1.constructor);
 #### 101 init()
 初始化和参数的一个管理
 对外提供接口就是$()或者jQuery()，其实他俩是同一个函数，$就是jQuery的简写方式，最终调用的都是（#61）那个函数，但是（#61），那里真正的构造函数是init，#61如下：
-```
+```javascript
 jQuery = function( selector, context ) {
 	// The jQuery object is actually just the init constructor 'enhanced'
 	return new jQuery.fn.init( selector, context, rootjQuery );
@@ -152,7 +152,7 @@ init可以对这写类型进行一些简单的分配，然后在分别进行处�
 #### 110 去判断字符串
 比如$("#div1"),$(".box"),$("div")或者是一些更复杂的选择，比如$("#main div.div1")
 
-```
+```javascript
 $(function(){
     //$("li").css("background","#f00");
     //将上面代码分解一下用原生去写
@@ -176,7 +176,7 @@ $(function(){
 还有：`$("<li>")`:创建一个标签，所以说字符串除了被选以外还可以被创建，还可以创建更复杂的，比如`$("<li>1</li><li>a</li>)`
 
 #### 查看一下对象
-```
+```javascript
 $(function(){
     //用Firefox打开这个页面，就可以看到效果
     console.log($("li").css("background","#f00"));
@@ -184,7 +184,7 @@ $(function(){
 ```
 ![](jQuerySoundCodeAnalyze_1_image/110_2.png)
 #### $()获取到的就是原生对象
-```
+```javascript
 $(function(){
     
     $("li")[1].style.background="red";
@@ -193,7 +193,7 @@ $(function(){
 在我们前面说过，在96-283简化版本中有一个length:this对象的长度,
 
 #### 对字符串做处理
-```
+```javascript
 $("#div1"),$(".box"),$("div") $("#div1 div.box")
 $("li")  $("<li>1</li><li>2</li>")
 ```
@@ -207,7 +207,7 @@ $("<li>hello</li>").appendTo($("ul"));
 ```
 
 #### 113 match定义了两个变量
-```
+```javascript
         if(){
              //$("li")  $("<li>1</li><li>2</li>")
         }else{
@@ -245,7 +245,7 @@ $("div") $("#div1 div.box")
 #### 120 
 `if ( match && (match[1] || !context) ) {`
 能走上面的那个if的
-```
+```javascript
  //$("li")  $("<li>1</li><li>2</li>")
 //$("#div1")
 ```
@@ -293,13 +293,13 @@ $("<li>",$(document))
 $("<li>1</li><li>2</li>").appendTo('ul')
 ```
 通过
-```
+```html
 $("<li>1</li><li>2</li>")
 ```
 我们想得到
-```
+```javascript
 this={
-    0:'li',
+    0:'li',  
     1:'li',
     length:2
 }
@@ -308,17 +308,203 @@ this={
 所以不管是单标签`$("<li>")`还是多标签`$("<li>1</li><li>2</li>")`最后都是走的是127那一行的parseHTML.**你要对jQuery.parseHTML这个方法有一定的了解**
 
 #### 127
-jQuery.parseHTML这个方法就是把一个字符串转成节点数组
+jQuery.parseHTML这个方法就是把一个字符串转成节点数组，
+
+#### 128 只有一个参数的时候
 举个例子
-```
-$(function(){
-    var str='<li>1</li><li>2</li><li>3</li>';
-    var arr=jQuery.parseHTML(str);
-    console.log(arr);
-})
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../jquery.js"></script>
+    <script>
+        $(function(){
+            var str='<li>1</li><li>2</li><li>3</li>';
+            var arr=jQuery.parseHTML(str);
+            console.log(arr);
+            $.each(arr,function(i){
+                $('ul').append(arr[i]);
+            })
+        })
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <ul></ul>
+</body>
+</html>
 ```
 结果如图所示
 ![](jQuerySoundCodeAnalyze_96_283_image/3.png)
+
+#### 129. jQuery.parseHTML还有第二个参数,
+
+就是指定根节点，可以是当前的页面也可以是iframe的页面
+```javascript
+jQuery.parseHTML(str,document)
+```
+
+#### 130. jQuery.parseHTML还有第三个参数
+那么true和false有什么关系呢？
+在默认情况下，是false
+```javascript
+var str='<li>1</li><li>2</li><li>3</li><script>alert("1")</script>';
+```
+**注意：**在字符串中，其他的标签的闭合标签都可以写`/`,但是唯独`</script>`标签的反斜杠不能直接写,需要转义一下`<\/script>  `
+
+这第三个参数就是允不允许`<script>`标签添加，默认情况下（false）是添加不进去的，如果你把第三个参数改为true，这时候就可以弹出1的,如下代码
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../jquery.js"></script>
+    <script>
+        $(function(){
+            var str='<li>1</li><li>2</li><li>3</li><script>alert("哈哈哈")<\/script>';
+            var arr=jQuery.parseHTML(str,document,true);
+            console.log(arr);
+            $.each(arr,function(i){
+                $('ul').append(arr[i]);
+            })
+        })
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <ul></ul>
+</body>
+</html>
+```
+
+
+jQuery.parseHTML操作最终返回的是一个数组,但是我们最后要的是一个json而不是数组，这时候就用到啦**127行**jQuery.merge,两个数组合并到一个数组中
+```javascript
+    $(function(){
+        var arr1=["s","b","c"],
+            arr2=["d","c","m"];
+        var arr=$.merge(arr1,arr2);
+        console.log(arr);
+        //Array [ "s", "b", "c", "d", "c", "m" ]
+    })
+```
+
+$.merge对外就是对数组进行合并，但是对内，他还可以合并json,但是有特定条件,如下代码
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../jquery.js"></script>
+    <script>
+        $(function(){
+            var arr1={
+                0:'a',
+                1:'b',
+                length:2
+            },
+                arr2=["d","c","m"];
+            var arr=$.merge(arr1,arr2);
+            console.log(arr);
+            //firefox中:Object [ "a", "b", "d", "c", "m" ]
+            //chrome:Object {0: "a", 1: "b", 2: "d", 3: "c", 4: "m", length: 5}
+        })
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <ul></ul>
+</body>
+</html>
+```
+
+综上所述127-131得到的就是如下的结果
+```javascript
+this={
+    0:'li',  
+    1:'li',
+    length:2
+}
+```
+#### 134-145
+这一部分处理的是如下的形式
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../jquery.js"></script>
+    <script>
+        $(function(){
+            $("<li>",{title:"hi",html:"abcd"}).appendTo('ul');
+        })
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <ul></ul>
+</body>
+</html>
+```
+![](jQuerySoundCodeAnalyze_96_283_image/134_1.png)
+
+#### 134
+首先进行了一个正则的判断` rsingleTag.test`,` rsingleTag`这个正则的意思是匹配单标签，单标签的意思就是他只能匹配成功`$('<li>')`,或者是这种`$('<li></li>')`,除了这两种以外，剩下的都不行，比如说两个的时候。`$('<li></li><li></li>')`，可以试一下
+```javascript
+        $(function(){
+            $("<li></li><li></li>",{title:"hi",html:"abcd"}).appendTo('ul');
+        })
+```
+![](jQuerySoundCodeAnalyze_96_283_image/134_2.png)
+可以看到li标签是创建成功了，但是{}里面的东西没有创建成功
+
+#### 134 第二部分是要求必须是一个对象字面量
+```javascript
+jQuery.isPlainObject( context )
+``` 
+我们可以看到上面那个例子，第二个参数确实是一个字面量形式的参数
+```javascript
+{title:"hi",html:"abcd"}
+```
+
+#### 135
+进入if以后，进行了一个for...in...循环，然后里面又是一个if...else..
+
+#### 137
+```javascript
+if ( jQuery.isFunction( this[ match ] ) )
+```
+`isFunction`判断他是不是函数,此时的this是`{title:"hi",html:"abcd"}`,match就是title或者html.咱们的jQuery里面有`html()`这个方法，但是没有title的方法，所以此时html进入if里面，然后进行函数调用处理`this[ match ]( context[ match ] );`,所以你在里面写`html:"abcd"`,相当于`this.html("abcd")`
+
+
+#### 141 
+else就是给他加属性，就像上面的`title:"hi"`
+
+#### 142
+加属性，如上
+
+#### 147 创建标签完成
+字符串里面只说了标签
+```javascript
+$("<li>")  $("<li>2</li><li>3</li>)
+```
+但是还有好多没有处理的，如
+```javascript
+$()  jQuery()
+$('li','ul')
+
+$('')  $(null) $(undefined)  $(false)
+
+$("#div1")  $(".box")  $("div")  $("#div1 div.box")
+
+
+$(this) $(document)
+
+$(function(){})
+
+$([]) $({})
+```
 
 #### 150-164再次进行判断进入else
 进入else的时候是选择id的时候`$("#div1")`
@@ -332,4 +518,4 @@ $(function(){
 #### 193 处理传数组或者json的情况
 例如`$([])`或者`$({})`
 
-9 10.49
+10

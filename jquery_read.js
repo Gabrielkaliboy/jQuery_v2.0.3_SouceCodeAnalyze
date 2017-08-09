@@ -166,6 +166,8 @@ jQuery.fn = jQuery.prototype = {
 					context = context instanceof jQuery ? context[0] : context;
 
 					// scripts is true for back-compat
+					//用来判断script标签是否可以添加进入，jQuery.parseHTML
+					//最终返回的是一个数组,但是我们最后要的是一个json而不是数组
 					jQuery.merge( this, jQuery.parseHTML(
 						match[1],
 						context && context.nodeType ? context.ownerDocument || context : document,

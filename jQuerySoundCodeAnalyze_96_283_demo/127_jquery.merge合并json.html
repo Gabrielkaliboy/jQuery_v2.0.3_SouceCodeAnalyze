@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="../jquery.js"></script>
+    <script>
+        $(function(){
+            var arr1={
+                0:'a',
+                1:'b',
+                length:2
+            },
+                arr2=["d","c","m"];
+            var arr=$.merge(arr1,arr2);
+            console.log(arr);
+            //firefox中:Object [ "a", "b", "d", "c", "m" ]
+            //chrome:Object {0: "a", 1: "b", 2: "d", 3: "c", 4: "m", length: 5}
+        })
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <ul></ul>
+</body>
+</html>
