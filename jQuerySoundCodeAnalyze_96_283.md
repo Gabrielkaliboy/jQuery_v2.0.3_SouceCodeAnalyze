@@ -127,6 +127,11 @@ alert(a1.constructor);
 
 基于以上的原因，jQuery源码中prototype方法挂载也是用的第二种，所以就有了第100行的代码写法
 
+
+
+
+
+
 #### 101 init()
 初始化和参数的一个管理
 对外提供接口就是$()或者jQuery()，其实他俩是同一个函数，$就是jQuery的简写方式，最终调用的都是（#61）那个函数，但是（#61），那里真正的构造函数是init，#61如下：
@@ -137,6 +142,23 @@ jQuery = function( selector, context ) {
 }
 ```
 可以看到对外接口传进来的参数就是一个元素一个作用域，最后都跑到了init里面了，
+
+**这里面初始化的时候selector有如下情况**
+```javascript
+$()  jQuery()
+$('li','ul')
+
+$('')  $(null) $(undefined)  $(false)
+$("<li>")  $("<li>2</li><li>3</li>)
+$("#div1")  $(".box")  $("div")  $("#div1 div.box")
+
+
+$(this) $(document)
+
+$(function(){})
+
+$([]) $({})
+```
 
 #### init里面的参数selector
 `$("li")`获取的是页面中所有的li，而`$("li","ul")`是获取的ul下面的li，第二个元素就是前面第一个元素的限制条件。
