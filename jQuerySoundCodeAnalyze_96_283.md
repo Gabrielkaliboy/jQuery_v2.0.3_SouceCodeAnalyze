@@ -18,6 +18,24 @@ jQuery.fn=jquery.prototype={
     jquery:版本,
     constructor:修正指向问题,
     init():初始化和参数管理,
+                110-177 处理字符串，包含下面情况：
+                    $("#div1"),$(".box"),$("div") $("#div1 div.box")
+                    $("li")  $("<li>1</li><li>2</li>")
+
+                    120-167 if 语句，创建标签和id的形式
+                        123-150:在次进行if,创建标签
+                        150-164:上面if对应的else,就是对应的id的形式
+
+                    167-172 else if
+
+                    172-177 else
+
+                
+                177-184
+
+                184-186
+
+
     selector:存储选择字符串,
     length:this对象的长度,
     toArray():转数组,
@@ -530,6 +548,73 @@ $([]) $({})
 
 #### 150-164再次进行判断进入else
 进入else的时候是选择id的时候`$("#div1")`
+
+#### 151
+通过原生的getElementById来获取id元素，这里的match[2],就是`match=["#div1",null,"div1"];`里面的角标为2的，正好就是div1
+
+#### 153-154
+一般的情况下，所有的浏览器去判断元素存不存在就知道我们的获取的id对不对，但是有一种特殊的情况，就是在黑莓46的系统下，光判断elem是不靠谱的，可能这个元素
+不在页面上，但是if(elem)还是能找到，所以又加了一个如果这个elem存在，并且他有父级，那他一定是存在的；相反的如果一个元素不存在，他肯定是没有父级的
+
+
+#### 157-158
+前面说过，jQuery选择元素的时候，是存成了一个json的形式，并不是一个数组，这样的话是没有长度的，所以说必须手动的给他加一个length，并且里面的第一项存的
+就是我们的elem
+
+#### 161
+这是的上下文就是document
+
+#### 162
+这时候的select就是我们容器选择到的字符串，比如`#div1`
+
+
+#### 163
+返回这个对象，不需要在往后去查找了
+
+
+#### 167
+判断`$(expr, $(...))`,当这个执行上下文不存在的时候`!context`,下面的context就是不存在，或一下`rootjQuery`,所以`( context || rootjQuery )`
+里面的值就是rootjQuery,rootjQuery就是`$(document)`,find就是在指定的节点下面进行筛选，比如
+
+```javascript
+$(document).find('ul li.box')
+```
+在复杂的一些选择其实都是通过find来实现的，find最后调用的就是sizzle
+
+
+
+当context存在上线文的时候，他就会接着走`context.jquery`,这时候就是看一下上下文是不是jQuery对象，如果是jQuery对象，就接着往后走，如果不是就到了172行
+
+
+上面有点绕，详细一些
+
+```
+$('ul',document).find('li'); document是原生的，这是的167行`context.jquery`，上下文是找不到jQuery属性的，因为属性是在jQuery对象下面的，这时候就会走172的else，这个else里面的`this.constructor`就是jQuery，context就是document，综上，这段代码就相当于
+
+```
+jQuery(document).find();
+```
+
+//或者
+
+$('ul',$(document)).find('li'); 这句话的document是jQuery选择器下面的，167行的`context.jquery`就会为真，就会走168的rootjQuery，我们上面说了，rootjQuery就是`$(document)`，综上，这段代码相当于
+···
+jQuery(document).find();
+```
+
+$('ul').find('li')在167没有上下文的时候，就是`!context`,由于context不存在，所以168的时候就是走的rootjQuery
+
+
+说白了就是find要求他前面必须是一个jQuery对象
+#### 172
+```
+$('ul',document).find('li'); document是原生的，这是的167行`context.jquery`，上下文是找不到jQuery属性的，因为属性是在jQuery对象下面的，这时候就会走172的else，这个else里面的`this.constructor`就是jQuery，context就是document，综上，这段代码就相当于
+
+```
+jQuery(document).find();
+```
+
+
 #### 200 默认length的长度是0
 #### 177 对dom元素直接进行处理
 比如`$(this)`,或者`$(document)`
@@ -540,4 +625,4 @@ $([]) $({})
 #### 193 处理传数组或者json的情况
 例如`$([])`或者`$({})`
 
-10
+11
